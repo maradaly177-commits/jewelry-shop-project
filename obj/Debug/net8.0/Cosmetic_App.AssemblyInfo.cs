@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Cosmetic_App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4651a2553dc31756d3b9c97e98fd65aaee21dc44")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+30f077e90cff925e3fb95bd99fd9914bd26e9e13")]
 [assembly: System.Reflection.AssemblyProductAttribute("Cosmetic_App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Cosmetic_App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
