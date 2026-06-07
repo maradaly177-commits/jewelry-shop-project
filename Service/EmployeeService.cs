@@ -5,6 +5,7 @@ using Cosmetic_App.Common.Entity;
 
 namespace Cosmetic_App.Service
 {
+    // Người thực hiện: Marada
     public class EmployeeService : BaseService<Employee>, IEmployeeService
     {
         public EmployeeService(IEmployeeRepository employeeRepository) : base(employeeRepository)

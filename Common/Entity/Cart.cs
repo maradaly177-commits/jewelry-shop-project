@@ -3,14 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cosmetic_App.Common.Entity
 {
+    /// <summary>
+    /// Entity giỏ hàng
+    /// Người thực hiện: Marada
+    /// </summary>
     [Table("carts")]
-    public class Cart
+    public class Cart : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
+        /// <summary>
+        /// ID người dùng
+        /// </summary>
         public int UserId { get; set; }
-
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
     }
 }

@@ -4,21 +4,22 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Cosmetic_App.Common.Entity
 {
     /// <summary>
-    /// Thực thể Danh mục sản phẩm trang sức (Nhẫn, Dây chuyền, Bông tai...)
-    /// Người thực hiện: Marada (MSSV: 5001467)
+    /// Thực thể danh mục sản phẩm
+    /// Người thực hiện: Marada
     /// </summary>
-    [Table("categories")] // Đảm bảo tên bảng khớp với MySQL
+    [Table("categories")]
     public class Category : BaseEntity
     {
-        [Key]
-        // Đổi sang string để đồng bộ với BaseRepository đã sửa
-        public string CategoryId { get; set; } = Guid.NewGuid().ToString();
-
+        /// <summary>
+        /// Tên danh mục (Nhẫn, Dây chuyền…)
+        /// </summary>
         [Required]
         [MaxLength(255)]
         public string CategoryName { get; set; } = string.Empty;
 
-        // Có thể thêm mô tả cho danh mục (ví dụ: Trang sức cao cấp, Bộ sưu tập hè)
+        /// <summary>
+        /// Mô tả danh mục
+        /// </summary>
         public string? Description { get; set; }
     }
 }

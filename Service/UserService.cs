@@ -5,25 +5,38 @@ using Cosmetic_App.Service.Interfaces;
 
 namespace Cosmetic_App.Service
 {
+    /// <summary>
+    /// Service xử lý nghiệp vụ liên quan đến User
+    /// Bao gồm: Login, Register, quản lý thông tin người dùng
+    /// Người thực hiện: Marada
+    /// </summary>
     public class UserService : BaseService<User>, IUserService
     {
+        /// <summary>
+        /// Repository xử lý truy vấn User
+        /// </summary>
         private readonly IUserRepository _userRepository;
 
-        public UserService(IUserRepository userRepository) : base(userRepository)
+        /// <summary>
+        /// Constructor inject repository
+        /// </summary>
+        public UserService(IUserRepository userRepository)
+            : base(userRepository)
         {
             _userRepository = userRepository;
         }
 
-        // --- PHẦN LOGIN ---
+        // =========================
+        // LOGIN
+        // =========================
         /// <summary>
-        /// 
+        /// Xử lý đăng nhập người dùng
+        /// Kiểm tra email + mật khẩu (BCrypt)
         /// </summary>
-        /// <param name="email"></param>
-        /// <param name="password"></param>
-        /// <returns></returns>
         public async Task<User?> LoginAsync(string email, string password)
         {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(email) ||
+                string.IsNullOrWhiteSpace(password))
                 return null;
 
             var user = await _userRepository.GetUserByEmailAsync(email.Trim());
@@ -33,17 +46,19 @@ namespace Cosmetic_App.Service
 
             try
             {
-                // Kiểm tra BCrypt chuẩn nttrung: Chỗ này chưa đúng mã hóa(Sử dụng AI để phân tích cách mã hóa mật khẩu lúc đăng
-                // nhập và đăng ký)
-                bool isBcryptHash = user.PasswordHash.StartsWith("$2a$") || user.PasswordHash.StartsWith("$2b$");
+                var inputPassword = password.Trim();
+                var storedPassword = user.PasswordHash;
 
-                if (isBcryptHash)
+                // Nếu là BCrypt
+                if (storedPassword.StartsWith("$2a$") || storedPassword.StartsWith("$2b$"))
                 {
-                    return BCrypt.Net.BCrypt.Verify(password.Trim(), user.PasswordHash) ? user : null;
+                    return BCrypt.Net.BCrypt.Verify(inputPassword, storedPassword)
+                        ? user
+                        : null;
                 }
-                // Fallback cho dữ liệu cũ (plaintext)
-                // so sánh password khi đăng nhập
-                return user.PasswordHash.Trim() == password.Trim() ? user : null;
+
+                // ✔ fallback plaintext (để user cũ login được)
+                return storedPassword.Trim() == inputPassword ? user : null;
             }
             catch
             {
@@ -51,31 +66,41 @@ namespace Cosmetic_App.Service
             }
         }
 
-        // --- PHẦN REGISTER ---
+        // =========================
+        // REGISTER
+        // =========================
+        /// <summary>
+        /// Đăng ký tài khoản mới
+        /// Bao gồm: validate + hash password + lưu DB
+        /// </summary>
         public async Task<bool> RegisterAsync(User user)
         {
-            // 1. Validate dữ liệu chặt chẽ
-            if (user == null || string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.PasswordHash))
+            if (user == null ||
+                string.IsNullOrWhiteSpace(user.Email) ||
+                string.IsNullOrWhiteSpace(user.PasswordHash))
                 return false;
 
-            // 2. Chuẩn hóa Email
+            // Chuẩn hóa email
             user.Email = user.Email.Trim().ToLower();
 
-            // 3. Kiểm tra tồn tại
-            var existingUser = await _userRepository.GetUserByEmailAsync(user.Email);
+            // Kiểm tra email tồn tại
+            var existingUser =
+                await _userRepository.GetUserByEmailAsync(user.Email);
+
             if (existingUser != null)
-                return false; // Email đã được sử dụng
+                return false;
 
-            // 4. Mã hóa mật khẩu (Luôn luôn mã hóa trước khi lưu)
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.PasswordHash.Trim());
+            // Hash mật khẩu bằng BCrypt
+            user.PasswordHash =
+                BCrypt.Net.BCrypt.HashPassword(user.PasswordHash.Trim());
 
-            // 5. Metadata
+            // Metadata
             user.CreatedDate = DateTime.Now;
             user.ModifiedDate = DateTime.Now;
             user.CreatedBy = "System";
 
-            // 6. Lưu vào DB
-            return await _userRepository.Register(user);
+            // Lưu DB
+            return await _userRepository.Register(user) > 0;
         }
     }
 }

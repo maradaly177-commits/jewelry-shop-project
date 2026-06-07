@@ -2,27 +2,26 @@
 
 namespace Cosmetic_App.Common.Entity
 {
+    /// <summary>
+    /// Thực thể người dùng hệ thống
+    /// Người thực hiện: Marada
+    /// </summary>
     public class User : BaseEntity
     {
-        [Key]
-        // Giữ lại vì BaseEntity không chứa Id
-        public int Id { get; set; }
-
         [Required]
         [EmailAddress]
         [MaxLength(191)]
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        // Phải khớp chính xác tên cột PasswordHash trong database
+        [MaxLength(255)]
         public string PasswordHash { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(255)]
-        public string? FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
         [MaxLength(50)]
-        // Bỏ giá trị mặc định để Dapper map chính xác giá trị từ DB (Admin/Customer)
-        public string? Role { get; set; }
+        public string? Role { get; set; } = "Customer";
     }
 }

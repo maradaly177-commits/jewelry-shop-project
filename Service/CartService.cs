@@ -4,6 +4,7 @@ using Cosmetic_App.Service.Interfaces;
 
 namespace Cosmetic_App.Service
 {
+    // Người thực hiện: Marada
     public class CartService : ICartService
     {
         private readonly ICartRepository _cartRepository;
@@ -16,6 +17,7 @@ namespace Cosmetic_App.Service
         // =========================
         // ADD TO CART
         // =========================
+        // Người thực hiện: Vortey
         public async Task AddToCart(int userId, int productId, int quantity)
         {
             await _cartRepository.AddToCart(userId, productId, quantity);
@@ -24,6 +26,7 @@ namespace Cosmetic_App.Service
         // =========================
         // GET CART
         // =========================
+        // Người thực hiện: Vortey
         public async Task<IEnumerable<CartItemDto>> GetCart(int userId)
         {
             return await _cartRepository.GetCart(userId);
@@ -40,6 +43,7 @@ namespace Cosmetic_App.Service
         // =========================
         // DECREASE
         // =========================
+        // Người thực hiện: Vortey
         public async Task Decrease(int userId, int productId)
         {
             await _cartRepository.Decrease(userId, productId);
@@ -48,6 +52,7 @@ namespace Cosmetic_App.Service
         // =========================
         // REMOVE
         // =========================
+        // Người thực hiện: Vortey
         public async Task Remove(int userId, int productId)
         {
             await _cartRepository.Remove(userId, productId);

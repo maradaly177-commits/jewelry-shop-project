@@ -3,11 +3,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cosmetic_App.Common.Entity
 {
+    /// <summary>
+    /// Thực thể sản phẩm
+    /// Người thực hiện: Marada
+    /// </summary>
     [Table("products")]
     public class Product : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }   // ✅ DÙNG INT (KHỚP DB)
+        /// <summary>
+        /// Mã sản phẩm (không dùng Id)
+        /// </summary>
+        [Required]
+        [MaxLength(50)]
+        public string ProductCode { get; set; } = string.Empty;
 
         [Required]
         public string ProductName { get; set; } = string.Empty;
@@ -22,12 +30,12 @@ namespace Cosmetic_App.Common.Entity
         public string? Image { get; set; }
 
         public string? Material { get; set; }
+
         public string? Gemstone { get; set; }
-        public string? Size { get; set; }
 
-        public int CategoryId { get; set; }  // ✅ cũng dùng int
-
-        [NotMapped]
-        public virtual Category? Category { get; set; }
+        /// <summary>
+        /// ID danh mục
+        /// </summary>
+        public int CategoryId { get; set; }
     }
 }

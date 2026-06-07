@@ -4,20 +4,24 @@ using Cosmetic_App.Service.Interfaces;
 
 namespace Cosmetic_App.Service
 {
+    // Người thực hiện: Marada
     public class ProductService : BaseService<Product>, IProductService
     {
         private readonly IProductRepository _productRepository;
 
-        public ProductService(IProductRepository productRepository) : base(productRepository)
+        public ProductService(IProductRepository productRepository)
+            : base(productRepository)
         {
             _productRepository = productRepository;
         }
 
-
-        // 2. BẮT BUỘC: Phải triển khai thêm phương thức này từ IProductService
         public async Task<IEnumerable<Product>> GetProductsByName(string name)
         {
             return await _productRepository.GetProductsByName(name);
+        }
+        public async Task<IEnumerable<Product>> GetAllProducts(string? category)
+        {
+            return await _productRepository.GetAllProducts(category);
         }
     }
 }
