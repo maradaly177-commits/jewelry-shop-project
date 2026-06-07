@@ -7,13 +7,18 @@ using System.Data;
 
 namespace Cosmetic_App.Repository
 {
+    /// <summary>
+    /// Repository xử lý giỏ hàng (Cart)
+    /// Người thực hiện: Marada / Vortey
+    /// </summary>
     public class CartRepository : ICartRepository
     {
         private readonly string _connectionString;
 
         public CartRepository(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _connectionString = configuration.GetConnectionString("DefaultConnection")
+                ?? throw new Exception("Missing connection string");
         }
 
         private IDbConnection GetConnection()
@@ -28,12 +33,12 @@ namespace Cosmetic_App.Repository
         {
             using var conn = GetConnection();
 
-            var existing = await conn.QueryFirstOrDefaultAsync(
-                @"SELECT * FROM cart 
+            var existing = await conn.QueryFirstOrDefaultAsync<int>(
+                @"SELECT COUNT(1) FROM cart 
                   WHERE UserId = @userId AND ProductId = @productId",
                 new { userId, productId });
 
-            if (existing != null)
+            if (existing > 0)
             {
                 await conn.ExecuteAsync(
                     @"UPDATE cart 
@@ -51,24 +56,24 @@ namespace Cosmetic_App.Repository
         }
 
         // =========================
-        // GET CART (FIXED)
+        // GET CART
         // =========================
         public async Task<IEnumerable<CartItemDto>> GetCart(int userId)
         {
             using var conn = GetConnection();
 
             string sql = @"
-                SELECT 
-                    c.Id,
-                    c.ProductId,
-                    c.Quantity,
-                    p.ProductName,
-                    p.UnitPrice,
-                    p.Image
-                FROM cart c
-                INNER JOIN products p ON c.ProductId = p.Id
-                WHERE c.UserId = @userId
-            ";
+        SELECT 
+            c.Id,
+            c.ProductId,
+            c.Quantity,
+            IFNULL(p.ProductName, '') as ProductName,
+            IFNULL(p.UnitPrice, 0) as UnitPrice,
+            IFNULL(p.Image, '') as Image
+        FROM cart c
+        LEFT JOIN products p ON c.ProductId = p.Id
+        WHERE c.UserId = @userId
+    ";
 
             return await conn.QueryAsync<CartItemDto>(sql, new { userId });
         }
@@ -106,7 +111,7 @@ namespace Cosmetic_App.Repository
                 @"DELETE FROM cart 
                   WHERE UserId = @userId 
                   AND ProductId = @productId
-                  AND Quantity <= 0",
+                  AND Quantity <= 1",
                 new { userId, productId });
         }
 

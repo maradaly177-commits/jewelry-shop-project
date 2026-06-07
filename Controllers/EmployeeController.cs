@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Cosmetic_App.Controllers
 {
+    /// Người thực hiện: Marada
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeeController : BaseController<Employee>

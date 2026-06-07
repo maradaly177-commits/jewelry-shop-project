@@ -2,29 +2,38 @@
 
 namespace Cosmetic_App.Common.Entity
 {
+    /// <summary>
+    /// Base entity chứa các thuộc tính chung cho toàn hệ thống
+    /// Người thực hiện: Marada
+    /// </summary>
     public class BaseEntity
     {
         /// <summary>
-        /// Ngày tạo
+        /// Khóa chính (Primary Key)
         /// </summary>
-        /// CreatedBy: NTTrung (16/07/2023) 
-        public DateTimeOffset? CreatedDate { get; set; }
+        [Key]
+        public int Id { get; set; }
+
         /// <summary>
-        /// Người tạo
+        /// Ngày tạo dữ liệu
         /// </summary>
-        /// CreatedBy: NTTrung (16/07/2023) 
-        [MaxLength(255, ErrorMessage = "Người tạo tối đa 255 ký tự")]
+        public DateTimeOffset CreatedDate { get; set; } = DateTimeOffset.UtcNow;
+
+        /// <summary>
+        /// Người tạo dữ liệu
+        /// </summary>
+        [MaxLength(255)]
         public string? CreatedBy { get; set; }
+
         /// <summary>
-        /// Ngày sửa
+        /// Ngày cập nhật gần nhất
         /// </summary>
-        /// CreatedBy: NTTrung (16/07/2023) 
-        [MaxLength(255, ErrorMessage = "Người sửa tối đa 255 ký tự")]
         public DateTimeOffset? ModifiedDate { get; set; }
+
         /// <summary>
-        /// Người sửa
+        /// Người cập nhật
         /// </summary>
-        /// CreatedBy: NTTrung (16/07/2023) 
+        [MaxLength(255)]
         public string? ModifiedBy { get; set; }
     }
 }

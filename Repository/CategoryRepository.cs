@@ -4,16 +4,16 @@ using Microsoft.Extensions.Configuration;
 
 namespace Cosmetic_App.Repository
 {
+    /// <summary>
+    /// Repository xử lý Category (Danh mục sản phẩm)
+    /// Người thực hiện: Marada
+    /// </summary>
     public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
     {
         public CategoryRepository(IConfiguration configuration) : base(configuration)
         {
-            // Cấu hình tên bảng và khóa chính khớp 100% với trong MySQL
-            // Hãy thay đổi "categories" và "CategoryId" nếu trong DB của bạn tên khác
             TableName = "categories";
-            TableId = "CategoryId";
+            TableId = "Id"; // nên dùng Id int để đồng bộ hệ thống
         }
-
-        // Hiện tại không cần ghi đè (override) các hàm CRUD vì BaseRepository đã chuẩn Guid
     }
 }

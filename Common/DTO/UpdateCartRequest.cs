@@ -1,4 +1,4 @@
-﻿namespace Cosmetic_App.Models
+﻿namespace Cosmetic_App.Common.DTO
 {
     /// <summary>
     /// Chức năng: Đối tượng hứng dữ liệu thay đổi số lượng từ giao diện Giỏ hàng.
@@ -6,6 +6,7 @@
     /// </summary>
     public class UpdateCartRequest
     {
+        /// Người thực hiện: Vortey
         public string OrderDetailId { get; set; } = string.Empty;
         public int NewQuantity { get; set; }
     }

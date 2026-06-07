@@ -1,46 +1,109 @@
-﻿using Cosmetic_App.Service.Interfaces;
+﻿using Cosmetic_App.Common;
+using Cosmetic_App.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Cosmetic_App.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class BaseController<TEntity> : ControllerBase where TEntity : class
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BaseController<TEntity> : ControllerBase where TEntity : class
+    protected readonly IBaseService<TEntity> _service;
+
+    public BaseController(IBaseService<TEntity> service)
     {
-        protected readonly IBaseService<TEntity> _baseService;
+        _service = service;
+    }
 
-        public BaseController(IBaseService<TEntity> baseService)
+    // GET BY ID
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        if (id <= 0)
         {
-            _baseService = baseService;
+            return BadRequest(new ApiResponse<object>
+            {
+                Success = false,
+                Message = "ID không hợp lệ",
+                Data = null
+            });
         }
 
-        // 🔥 SỬA Guid -> int
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        var data = await _service.GetByIdAsync(id);
+
+        if (data == null)
         {
-            var result = await _baseService.DeleteAsync(id);
-            return Ok(result);
+            return NotFound(new ApiResponse<object>
+            {
+                Success = false,
+                Message = "Không tìm thấy",
+                Data = null
+            });
         }
 
-        // 🔥 SỬA Guid -> int
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByID(int id)
+        return Ok(new ApiResponse<TEntity>
         {
-            if (id <= 0) return BadRequest("ID không hợp lệ");
+            Success = true,
+            Message = "Lấy dữ liệu thành công",
+            Data = data
+        });
+    }
 
-            var result = await _baseService.GetByIdAsync(id);
+    // GET ALL + PAGING
+    [HttpGet]
+    public async Task<IActionResult> GetAll(int page = 1, int pageSize = 1000, string search = "")
+    {
+        var result = await _service.GetPagedAsync(page, pageSize, search);
 
-            if (result == null)
-                return NotFound("Không tìm thấy dữ liệu");
-
-            return Ok(result);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        return Ok(new ApiResponse<object>
         {
-            var data = await _baseService.GetAllAsync();
-            return Ok(data);
-        }
+            Success = true,
+            Message = "Lấy danh sách thành công",
+            Data = new
+            {
+                Data = result.Data,
+                TotalCount = result.TotalCount
+            }
+        });
+    }
+
+    // CREATE
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] TEntity entity)
+    {
+        var data = await _service.InsertAsync(entity);
+
+        return Ok(new ApiResponse<TEntity>
+        {
+            Success = true,
+            Message = "Thêm thành công",
+            Data = data
+        });
+    }
+
+    // UPDATE
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] TEntity entity)
+    {
+        var data = await _service.UpdateAsync(id, entity);
+
+        return Ok(new ApiResponse<TEntity>
+        {
+            Success = true,
+            Message = "Cập nhật thành công",
+            Data = data
+        });
+    }
+
+    // DELETE
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var success = await _service.DeleteAsync(id);
+
+        return Ok(new ApiResponse<bool>
+        {
+            Success = success,
+            Message = success ? "Xóa thành công" : "Xóa thất bại",
+            Data = success
+        });
     }
 }
